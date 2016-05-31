@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+ <head>
+   <meta charset="utf-8">
+   <title>Test</title>
+   <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+   <script lang="javascript" src="./node_modules/xlsx/dist/xlsx.core.min.js"></script>
+ </head>
+ <body>
+   <input type="file" id="your-files">
+   <select id="monthList"></select>
+   <script>
+       var mySheets;
+       var workbook;
+       var currentMonthSheet;
+       var monthNum;
+       var h;
+       var year = new Date().getFullYear();;
+       var numDays;
+       var myDate = new Date();
+       var currentMonthNum = myDate.getMonth();
+       var sel = document.getElementById('monthList');
+
+       function handleFile(e) {
+         var files = e.target.files;
+         var i,f;
+         for (i = 0, f = files[i]; i != files.length; ++i) {
+           var reader = new FileReader();
+           var name = f.name;
+           reader.onload = function(e) {
+						 var data = e.target.result;
+	           workbook = XLSX.read(data, {type: 'binary'});
+             mySheets = workbook.SheetNames;
+             for (var i = 0; i <= mySheets.length; i++) {
+               var opt = document.createElement('option');
+               opt.innerHTML = mySheets[i];
+               opt.value = mySheets[i];
+               sel.appendChild(opt);
+             }
+					 };
+         };
+         reader.readAsBinaryString(f);
+       }
+       if (mySheets) {
+         var currentMonth = mySheets[currentMonthNum];
+       }
+
+       function handleMonth(e){
+         currentMonth = e.target.value;
+         currentMonthSheet = workbook.Sheets[currentMonth];
+         monthNum = mySheets.indexOf(currentMonth) + 1;
+         numDays = daysInMonth(monthNum, year);
+         h = {};
+         for (var j = 1; j <= numDays; j++){
+           for (var key in currentMonthSheet) {
+             if (currentMonthSheet[key].v == j) {
+               if (h[j] && (j > numDays - 7)) {
+                  h[j] = key;
+               }
+               else if (!h[j]){
+                  h[j] = key;
+               }
+             }
+           }
+         }
+       }
+
+       var yourFile = document.getElementById("your-files");
+       sel.addEventListener('change', handleMonth, false);
+       yourFile.addEventListener('change', handleFile, false);
+   </script></code>
+   <h2 id='drag'>Drag</h2>
+   <script>
+		 function daysInMonth(month,year) {
+			 return new Date(year, month, 0).getDate();
+		 }
+
+     function handleDrop(e) {
+       e.stopPropagation();
+       e.preventDefault();
+       var files = e.dataTransfer.files;
+       var i,f;
+
+       for (i = 0, f = files[i]; i != files.length; ++i) {
+         var reader = new FileReader();
+         var name = f.name;
+         reader.onload = function(e) {
+
+         };
+         reader.readAsBinaryString(f);
+       }
+     }
+     var drag = document.getElementById("drag");
+     drag.addEventListener('drop', handleDrop, false);
+   </script>
+
+   <script>
+     var searchByName = function(first, last, startCol, endCol, startRow, endRow) {
+
+     }
+   </script>
+ </body>
+</html>
