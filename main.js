@@ -1,19 +1,41 @@
 function handleFile(e) {
-  var files = e.target.files;
-  var i,f;
-  for (i = 0, f = files[i]; i != files.length; ++i) {
-    var reader = new FileReader();
-    var name = f.name;
-    reader.onload = function(e) {
-      var data = e.target.result;
+ var files = e.target.files;
+ var i,f;
+ for (i = 0, f = files[i]; i != files.length; ++i) {
+   var reader = new FileReader();
+   var name = f.name;
+   reader.onload = function(e) {
+		 var data = e.target.result;
+     workbook = XLSX.read(data, {type: 'binary'});
+     mySheets = workbook.SheetNames;
+	 };
+ };
+ reader.readAsBinaryString(f);
+}
 
-      var workbook = XLSX.read(data, {type: 'binary'});
-      debugger;
-    };
-    reader.readAsBinaryString(f);
-  }
+function handleMonth(e){
+ if (workbook){
+   currentMonth = e.target.value;
+   currentMonthSheet = workbook.Sheets[currentMonth];
+   monthNum = mySheets.indexOf(currentMonth) + 1;
+   numDays = daysInMonth(monthNum, year);
+   h = {};
+   for (var j = 1; j <= numDays; j++){
+     for (var key in currentMonthSheet) {
+       if (currentMonthSheet[key].v == j) {
+         if (h[j] && (j > numDays - 7)) {
+            h[j] = key;
+         }
+         else if (!h[j]){
+            h[j] = key;
+         }
+       }
+     }
+   }
+ }
 }
 var yourFile = document.getElementById("your-files");
+sel.addEventListener('change', handleMonth, false);
 yourFile.addEventListener('change', handleFile, false);
 
 function handleDrop(e) {
