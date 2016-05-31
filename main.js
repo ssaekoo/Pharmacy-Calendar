@@ -1,3 +1,30 @@
+var mySheets;
+var workbook;
+var currentMonthSheet;
+var monthNum;
+var h;
+var year = new Date().getFullYear();;
+var numDays;
+var myDate = new Date();
+var currentMonthNum = myDate.getMonth();
+var sel = document.getElementById('monthList');
+var myMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+var rows;
+
+for (var i = 0; i < myMonths.length; i++) {
+   var opt = document.createElement('option');
+   opt.innerHTML = myMonths[i];
+   opt.value = myMonths[i];
+   if (i === currentMonthNum) {
+     opt.selected = 'selected';
+   }
+   opt.id = i + 1;
+   sel.appendChild(opt);
+}
+function daysInMonth(month,year) {
+   return new Date(year, month, 0).getDate();
+}
+
 function handleFile(e) {
  var files = e.target.files;
  var i,f;
@@ -17,12 +44,14 @@ function handleMonth(e){
  if (workbook){
    currentMonth = e.target.value;
    currentMonthSheet = workbook.Sheets[currentMonth];
-   monthNum = mySheets.indexOf(currentMonth) + 1;
+   monthNum = myMonths.indexOf(currentMonth) + 1;
    numDays = daysInMonth(monthNum, year);
    h = {};
+   rows = {};
    for (var j = 1; j <= numDays; j++){
      for (var key in currentMonthSheet) {
        if (currentMonthSheet[key].v == j) {
+         rows[key.replace(/[^0-9]+/g, "")] = 1;
          if (h[j] && (j > numDays - 7)) {
             h[j] = key;
          }
@@ -32,8 +61,10 @@ function handleMonth(e){
        }
      }
    }
+   rows = Object.keys(rows);
  }
 }
+
 var yourFile = document.getElementById("your-files");
 sel.addEventListener('change', handleMonth, false);
 yourFile.addEventListener('change', handleFile, false);
@@ -57,8 +88,8 @@ function handleDrop(e) {
     reader.readAsBinaryString(f);
   }
 }
-var drog = document.getElementById("drog");
-drog.addEventListener('drop', handleDrop, false);
+var drop = document.getElementById("drop");
+drop.addEventListener('drop', handleDrop, false);
 
 // the function is going to use regular expression to compare two names
 // name2 is input name, name1 is the name in excel file
